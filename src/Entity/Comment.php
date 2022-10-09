@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Comment
 {
     #[ORM\Id]
@@ -32,6 +33,7 @@ class Comment
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoFilename;
+    #[ORM\PrePersist]
 
     public function __toString(): string
     {
@@ -41,6 +43,23 @@ class Comment
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getConference(): ?Conference
+    {
+        return $this->conference;
+    }
+
+    public function setConference(?Conference $conference): self
+    {
+        $this->conference = $conference;
+
+        return $this;
     }
 
     public function getAuthor(): ?string
@@ -87,18 +106,6 @@ class Comment
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getConference(): ?Conference
-    {
-        return $this->conference;
-    }
-
-    public function setConference(?Conference $conference): self
-    {
-        $this->conference = $conference;
 
         return $this;
     }
