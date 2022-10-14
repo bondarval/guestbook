@@ -38,6 +38,9 @@ class Comment
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoFilename;
+
+    #[ORM\Column(length: 255, options: ["default" => "submitted"])]
+    private ?string $state = "submitted";
     #[ORM\PrePersist]
 
     public function __toString(): string
@@ -98,9 +101,9 @@ class Comment
         return $this;
     }
 
-    public function setCreatedAtValue(): string
+    public function setCreatedAtValue()
     {
-        return $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -123,6 +126,18 @@ class Comment
     public function setPhotoFilename(?string $photoFilename): self
     {
         $this->photoFilename = $photoFilename;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }

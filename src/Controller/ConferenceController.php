@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Conference;
 use App\Form\CommentFormType;
+use App\Message\CommentMessage;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,15 +13,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class ConferenceController extends AbstractController
 {
-    private $twig;
-    private $entityManager;
+    private Environment $twig;
+    private EntityManagerInterface $entityManager;
+    private MessageBusInterface $bus;
 
-    public function __construct(Environment $twig, EntityManagerInterface $entityManager)
+    public function __construct(Environment $twig, EntityManagerInterface $entityManager, MessageBusInterface $bus)
     {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
@@ -34,6 +40,11 @@ class ConferenceController extends AbstractController
         ]));
     }
 
+    /**
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws LoaderError
+     */
     #[Route('/conference/{slug}', name: 'conference')]
     public function show(Request $request, Conference $conference, CommentRepository $commentRepository, string $photoDir): Response
     {
@@ -54,6 +65,15 @@ class ConferenceController extends AbstractController
 
                 $this->entityManager->persist($comment);
                 $this->entityManager->flush();
+
+                $context = [
+                    'user_ip' => $request->getClientIp(),
+                    'user_agent' => $request->headers->get('user-agent'),
+                    'referrer' => $request->headers->get('referer'),
+                    'permalink' => $request->getUri(),
+                ];
+                $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
+
                 return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
             }
 
