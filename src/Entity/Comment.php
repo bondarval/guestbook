@@ -50,11 +50,6 @@ class Comment
         return $this->id;
     }
 
-    public function setCreatedAtValue()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
-
     public function getConference(): ?Conference
     {
         return $this->conference;
@@ -101,6 +96,11 @@ class Comment
         $this->email = $email;
 
         return $this;
+    }
+
+    public function setCreatedAtValue(): string
+    {
+        return $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

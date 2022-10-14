@@ -11,7 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class AppFixtures extends Fixture
 {
-    private $passwordHasherFactory;
+    private PasswordHasherFactoryInterface $passwordHasherFactory;
 
     public function __construct(PasswordHasherFactoryInterface $encoderFactory)
     {
@@ -37,6 +37,7 @@ class AppFixtures extends Fixture
         $comment1->setAuthor('Fabien');
         $comment1->setEmail('fabien@example.com');
         $comment1->setText('This was a great conference.');
+        $comment1->setCreatedAtValue('Nov 2, 2019, 2:12 PM');
         $manager->persist($comment1);
 
         $admin = new Admin();
@@ -44,7 +45,6 @@ class AppFixtures extends Fixture
         $admin->setUsername('admin');
         $admin->setPassword($this->passwordHasherFactory->getPasswordHasher(Admin::class)->hash('admin', null));
         $manager->persist($admin);
-
 
         $manager->flush();
     }
