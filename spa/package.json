@@ -10,6 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.19.6",
+    "@babel/preset-env": "^7.19.4",
+    "@symfony/webpack-encore": "^4.1.1",
+    "babel-preset-preact": "^2.0.0",
+    "bootstrap": "^5.2.2",
     "html-webpack-plugin": "^5.5.0",
     "node-sass": "^7.0.3",
     "preact": "^10.11.2",
